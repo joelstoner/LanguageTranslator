@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "CHqH5iuDbtg=",
+  "dgSpecHash": "/fV49xYR9zc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\LexicalAnalyzer.csproj",
+  "projectFilePath": "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/LexicalAnalyzer.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\jston\\.nuget\\packages\\documentformat.openxml\\3.2.0\\documentformat.openxml.3.2.0.nupkg.sha512",
-    "C:\\Users\\jston\\.nuget\\packages\\documentformat.openxml.framework\\3.2.0\\documentformat.openxml.framework.3.2.0.nupkg.sha512",
-    "C:\\Users\\jston\\.nuget\\packages\\system.io.packaging\\8.0.1\\system.io.packaging.8.0.1.nupkg.sha512"
+    "/home/joelstoner/.nuget/packages/documentformat.openxml/3.2.0/documentformat.openxml.3.2.0.nupkg.sha512",
+    "/home/joelstoner/.nuget/packages/documentformat.openxml.framework/3.2.0/documentformat.openxml.framework.3.2.0.nupkg.sha512",
+    "/home/joelstoner/.nuget/packages/system.io.packaging/8.0.1/system.io.packaging.8.0.1.nupkg.sha512"
   ],
   "logs": []
 }

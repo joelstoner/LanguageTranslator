@@ -1,4 +1,5 @@
 ﻿
+using System.Runtime.InteropServices;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
@@ -76,11 +77,25 @@ class FiniteStateTable
             }
         }
     }
+    private static string GetOsDir()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return "C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\ExcelSymbolTable.xlsx\\";
+        }
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            return "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/ExcelSymbolTable.xlsx";
+        }
+        return null;
+    }
 
 
     internal string[,] GetFiniteStateTable()
     {
-        string xlfile = "C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\ExcelSymbolTable.xlsx";
+        // Windows Address: C:\Users\jston\RiderProjects\LanguageTranslator\LexicalAnalyzer\ExcelSymbolTable.xlsx\
+        // Linux Address: 
+        string xlfile = GetOsDir();
         int[] dimensions = GetSymbolTableDimensions(xlfile);
         string[,] symbolTable = new string[dimensions[0], dimensions[1]];
         ScanSymbolTable(xlfile, symbolTable); 

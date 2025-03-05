@@ -1,4 +1,7 @@
+using System.Runtime.InteropServices;
+
 namespace LanguageTranslator;
+
 
 class TokenGenerator
 {
@@ -6,7 +9,19 @@ class TokenGenerator
     {
         LETTER, DIGIT, MULT, DIV, ASSIGN, CARROT, SPACE, OTHER
     }
-    
+
+    private static string GetOsDir()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return "C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\java0.txt";
+        }
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            return "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/java0.txt";
+        }
+        return null;
+    }
     static CharType GetCharType(char ch)
     {
         if (char.IsLetter(ch))
@@ -38,8 +53,9 @@ class TokenGenerator
             }
             Console.WriteLine();
         }
-        
-        using (StreamReader reader = new StreamReader("C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\java0.txt"))
+        // Windows Dir: C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\java0.txt
+        // Linux Dir: /home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/java0.txt
+        using (StreamReader reader = new StreamReader(GetOsDir()))
         {
             string buffer = "";
             string state = "0";  // starting state
