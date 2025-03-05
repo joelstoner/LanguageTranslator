@@ -80,18 +80,10 @@ class FiniteStateTable
 
     internal string[,] GetFiniteStateTable()
     {
-        string xlfile = "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/ExcelSymbolTable.xlsx";
+        string xlfile = "C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\ExcelSymbolTable.xlsx";
         int[] dimensions = GetSymbolTableDimensions(xlfile);
         string[,] symbolTable = new string[dimensions[0], dimensions[1]];
         ScanSymbolTable(xlfile, symbolTable); 
-        /* for (int i = 0; i < dimensions[0]; i++)
-        {
-            for (int j = 0; j < dimensions[1]; j++)
-            {
-                Console.Write(symbolTable[i, j] + " ");
-            }
-            Console.WriteLine();
-        } */
         return symbolTable;
     }
     
