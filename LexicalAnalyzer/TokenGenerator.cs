@@ -5,11 +5,6 @@ namespace LanguageTranslator;
 
 class TokenGenerator
 {
-    enum CharType
-    {
-        LETTER, DIGIT, MULT, DIV, ASSIGN, CARROT, SPACE, OTHER
-    }
-
     private static string GetOsDir()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -22,29 +17,49 @@ class TokenGenerator
         }
         return null;
     }
-    static CharType GetCharType(char ch)
+    static int GetCharType(char ch)
     {
         if (char.IsLetter(ch))
-            return CharType.LETTER;
+            return 0;
         if (char.IsDigit(ch))
-            return CharType.DIGIT;
+            return 1;
         if (ch == '*')
-            return CharType.MULT;
+            return 2;
         if (ch == '/')
-            return CharType.DIV;
+            return 3;
         if (ch == '=')
-            return CharType.ASSIGN;
+            return 4;
         if (ch == '<')
-            return CharType.CARROT;
+            return 5;
+        if (ch == '>')
+            return 6;
+        if (ch == ',')
+            return 7;
+        if (ch == ';')
+            return 8;
+        if (ch == '{')
+            return 9;
+        if (ch == '}')
+            return 10;
+        if (ch == '(')
+            return 11;
+        if (ch == ')')
+            return 12;
         if (char.IsWhiteSpace(ch))
-            return CharType.SPACE;
-        return CharType.OTHER;
+            return 13;
+        return 14;
+    }
+
+    static void GenerateToken(ref string token, string flag)
+    {
+        Console.WriteLine($"Token generated: {token}, {flag}\n");
+        token = "";
     }
     
     static void Main(string[]args)
     {
         string[,] fsa = new FiniteStateTable().GetFiniteStateTable();
-        List<string> tokens = new List<string>();
+        //List<string> tokens = new List<string>();
         for (int i = 0; i < fsa.GetLength(0); i++)
         {
             for (int j = 0; j < fsa.GetLength(1); j++)
@@ -58,7 +73,105 @@ class TokenGenerator
         using (StreamReader reader = new StreamReader(GetOsDir()))
         {
             string buffer = "";
+            string currentState = "0";
+            int intChar;
+            char newChar;
+            bool breaker = true;
+            //newChar = reader.Read();
+            while ((intChar = reader.Read()) != -1 && breaker)
+            {
+                newChar = (char)intChar;
+                Console.WriteLine($"{newChar} read in");
+                int newCharType = GetCharType(newChar);
+                string nextState = fsa[int.Parse(currentState)+1, newCharType];
+                Console.WriteLine($"State moved to {nextState}");
+                switch(int.Parse(currentState))
+                {
+                    case 0: // starting state
+                        switch (int.Parse(nextState))
+                        {
+                            case 0: // white space field
+                                currentState = nextState;
+                                break;
+                            case 1: // invalid character
+                                Console.WriteLine("Error: Invalid character");
+                                GenerateToken(ref buffer, "<inval>");
+                                break;
+                            case 2 or 20 or 21 or 22 or 23 or 24 or 25: // final state reached
+                                buffer += newChar;
+                                GenerateToken(ref buffer, "<something>");
+                                break;
+                            case 3 or 5 or 7 or 9 or 11 or 14: // char added to buffer
+                                currentState = nextState;
+                                buffer += newChar;
+                                break;
+                        }
+                        break;
+                    case 3 or 5: // numeric literal is found
+                        switch (int.Parse(nextState))
+                        {
+                            case 3 or 5: // adds each digit to buffer
+                                buffer += newChar;
+                                currentState = nextState;
+                                break;
+                            case 4 or 6: // end of numlitbreakbreak
+                                GenerateToken(ref buffer, "<>");
+                                break;
+                        }
+                        break;
+                    /* case 5: // variable or reserved word is found
+                        switch (int.Parse(nextState))
+                        {
+                            case 5:
+                                buffer += newChar;
+                                currentState = nextState;
+                                break;
+                            case 6:
+                                GenerateToken(ref buffer, nextState);
+                                break;
+                        }
+                        break; */
+                    case 7: // slash is found
+                        switch (int.Parse(nextState))
+                        {
+                            case 10:
+                                GenerateToken(ref buffer, "<>");
+                                break;
+                            case 8 or 9:
+                                currentState = nextState;
+                                break;
+                        }
+                        break;
+                    case 9:
+                        currentState = nextState;
+                        break;
+                    case 11 or 14 or 17:
+                        switch (int.Parse(nextState))
+                        {
+                            case 12 or 15 or 18:
+                                buffer += newChar;
+                                GenerateToken(ref buffer, "<>");
+                                break;
+                            case 13 or 16 or 19:
+                                buffer += newChar + '=';
+                                GenerateToken(ref buffer, "<>");
+                                break;
+                        }
+                        break;
+                        
+                }
+                
+            }
+        }
+        
+    }
+}
+/*
+        using (StreamReader reader = new StreamReader(GetOsDir()))
+        {
+            string buffer = "";
             string state = "0";  // starting state
+            int read = reader.Read();
             while (!reader.EndOfStream)
             {
                 int nextCharInt = reader.Peek();
@@ -68,6 +181,7 @@ class TokenGenerator
                 CharType type = GetCharType(nextChar);
                 
                 string newState = fsa[int.Parse(state) + 1, (int)type];
+                Console.WriteLine("State: " + newState);
                 
                 if (int.TryParse(newState, out int numericState))
                 {
@@ -82,18 +196,26 @@ class TokenGenerator
                 }
                 else
                 {
+                    // We have hit a final state.
                     if (!string.IsNullOrEmpty(buffer))
                     {
+                        // Finalize the token that was being accumulated.
                         tokens.Add(buffer.Trim());
                         Console.WriteLine(buffer.Trim());
                         buffer = "";
-                        state = "0";
                     }
                     else
                     {
-                        reader.Read();
+                        // If the buffer is empty, it might be a punctuation token.
+                        // Here, you can choose to add the final state's label (newState) as a token.
+                        tokens.Add(newState);
+                        Console.WriteLine(newState);
                     }
+                    reader.Read(); // consume the punctuation char
+                    state = "0";
+                    Console.WriteLine();
                 }
+
             }
             
             if (!string.IsNullOrEmpty(buffer))
@@ -102,7 +224,4 @@ class TokenGenerator
                 Console.WriteLine("Token: " + buffer);
             }
         }
-
-        
-    }
-}
+        */
