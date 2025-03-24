@@ -50,12 +50,60 @@ class TokenGenerator
         return 14;
     }
 
-    static void GenerateToken(ref string token, string flag)
+    static void GenerateToken(ref string token, ref string state, string flag)
     {
-        Console.WriteLine($"Token generated: {token}, {flag}\n");
+        Console.WriteLine($"{token} {flag}");
         token = "";
+        state = "0";
     }
-    
+
+    static string GetDelimiter(char d)
+    {
+        if (d == '*' || d == '/') 
+            return "$mop";
+        if (d == ',') 
+            return "$comma";
+        if (d == ';') 
+            return "$semi";
+        if (d == '{') 
+            return "$LB";
+        if (d == '}') 
+            return "$RB";
+        if (d == '(') 
+            return "$LP";
+        if (d == ')') 
+            return "$RP";
+        if (d == '+' || d == '-') 
+            return "$addop";
+            
+        return "";
+    }
+
+    static string ReservedWordCheck(string w)
+    {
+        if (w == "CONST")
+            return "$const";
+        if (w == "IF")
+            return "$if";
+        if (w == "VAR")
+            return "$var";
+        if (w == "THEN")
+            return "$then";
+        if (w == "PROCEDURE")
+            return "$procedure";
+        if (w == "WHILE")
+            return "$while";
+        if (w == "CALL")
+            return "$call";
+        if (w == "DO")
+            return "$do";
+        if (w == "ODD")
+            return "$odd";
+        if (w == "CLASS")
+            return "$class";
+        return "var";
+
+    }
     static void Main(string[]args)
     {
         string[,] fsa = new FiniteStateTable().GetFiniteStateTable();
@@ -77,14 +125,13 @@ class TokenGenerator
             int intChar;
             char newChar;
             bool breaker = true;
-            //newChar = reader.Read();
             while ((intChar = reader.Read()) != -1 && breaker)
             {
                 newChar = (char)intChar;
-                Console.WriteLine($"{newChar} read in");
                 int newCharType = GetCharType(newChar);
                 string nextState = fsa[int.Parse(currentState)+1, newCharType];
-                Console.WriteLine($"State moved to {nextState}");
+                //Console.WriteLine($"{newChar} read in");
+                //Console.WriteLine($"State moved to {nextState}");
                 switch(int.Parse(currentState))
                 {
                     case 0: // starting state
@@ -95,11 +142,13 @@ class TokenGenerator
                                 break;
                             case 1: // invalid character
                                 Console.WriteLine("Error: Invalid character");
-                                GenerateToken(ref buffer, "<inval>");
+                                //buffer += newChar;
+                                breaker = true;
+                                //GenerateToken(ref buffer, ref currentState,"<inval>");
                                 break;
                             case 2 or 20 or 21 or 22 or 23 or 24 or 25: // final state reached
                                 buffer += newChar;
-                                GenerateToken(ref buffer, "<something>");
+                                GenerateToken(ref buffer, ref currentState, GetDelimiter(newChar));
                                 break;
                             case 3 or 5 or 7 or 9 or 11 or 14: // char added to buffer
                                 currentState = nextState;
@@ -114,28 +163,19 @@ class TokenGenerator
                                 buffer += newChar;
                                 currentState = nextState;
                                 break;
-                            case 4 or 6: // end of numlitbreakbreak
-                                GenerateToken(ref buffer, "<>");
+                            case 4: // end of numlitbreakbreak
+                                GenerateToken(ref buffer, ref currentState, "numlit");
+                                break;
+                            case 6:
+                                GenerateToken(ref buffer, ref currentState, ReservedWordCheck(buffer));
                                 break;
                         }
                         break;
-                    /* case 5: // variable or reserved word is found
-                        switch (int.Parse(nextState))
-                        {
-                            case 5:
-                                buffer += newChar;
-                                currentState = nextState;
-                                break;
-                            case 6:
-                                GenerateToken(ref buffer, nextState);
-                                break;
-                        }
-                        break; */
                     case 7: // slash is found
                         switch (int.Parse(nextState))
                         {
                             case 10:
-                                GenerateToken(ref buffer, "<>");
+                                GenerateToken(ref buffer, ref currentState, "$mop");
                                 break;
                             case 8 or 9:
                                 currentState = nextState;
@@ -150,11 +190,11 @@ class TokenGenerator
                         {
                             case 12 or 15 or 18:
                                 buffer += newChar;
-                                GenerateToken(ref buffer, "<>");
+                                GenerateToken(ref buffer, ref currentState, $"${buffer}");
                                 break;
                             case 13 or 16 or 19:
-                                buffer += newChar + '=';
-                                GenerateToken(ref buffer, "<>");
+                                buffer += newChar;
+                                GenerateToken(ref buffer, ref currentState, $"${buffer}");
                                 break;
                         }
                         break;
@@ -166,62 +206,3 @@ class TokenGenerator
         
     }
 }
-/*
-        using (StreamReader reader = new StreamReader(GetOsDir()))
-        {
-            string buffer = "";
-            string state = "0";  // starting state
-            int read = reader.Read();
-            while (!reader.EndOfStream)
-            {
-                int nextCharInt = reader.Peek();
-                if (nextCharInt == -1)
-                    break;
-                char nextChar = (char)nextCharInt;
-                CharType type = GetCharType(nextChar);
-                
-                string newState = fsa[int.Parse(state) + 1, (int)type];
-                Console.WriteLine("State: " + newState);
-                
-                if (int.TryParse(newState, out int numericState))
-                {
-                    reader.Read(); 
-                    if (numericState == -1)
-                    {
-                        Console.WriteLine("Error: Invalid Character");
-                        break;
-                    }
-                    buffer += nextChar;
-                    state = newState;
-                }
-                else
-                {
-                    // We have hit a final state.
-                    if (!string.IsNullOrEmpty(buffer))
-                    {
-                        // Finalize the token that was being accumulated.
-                        tokens.Add(buffer.Trim());
-                        Console.WriteLine(buffer.Trim());
-                        buffer = "";
-                    }
-                    else
-                    {
-                        // If the buffer is empty, it might be a punctuation token.
-                        // Here, you can choose to add the final state's label (newState) as a token.
-                        tokens.Add(newState);
-                        Console.WriteLine(newState);
-                    }
-                    reader.Read(); // consume the punctuation char
-                    state = "0";
-                    Console.WriteLine();
-                }
-
-            }
-            
-            if (!string.IsNullOrEmpty(buffer))
-            {
-                tokens.Add(buffer);
-                Console.WriteLine("Token: " + buffer);
-            }
-        }
-        */
