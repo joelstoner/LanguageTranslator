@@ -1,7 +1,7 @@
 CLASS LargestCommonDenominator{
-CONST M = 7, N = 85;
+CONST M = 7 , N = 85;
 VAR X, Y, Z, Q, R;
-PROCEDURE Multiply(){
+PROCEDURE Multiply(){ 
 VAR A, B;
 A = X; B = Y; Z = 0;
 WHILE B > 0 DO {

@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 
 namespace LanguageTranslator;
 
-
 class TokenGenerator
 {
     private static string GetOsDir()
@@ -45,16 +44,28 @@ class TokenGenerator
             return 11;
         if (ch == ')')
             return 12;
-        if (char.IsWhiteSpace(ch))
+        if (ch == '+')
             return 13;
-        return 14;
+        if (ch == '–')
+            return 14;
+        if (char.IsWhiteSpace(ch))
+            return 15;
+        return 16;
     }
 
-    static void GenerateToken(ref string token, ref string state, string flag)
-    {
-        Console.WriteLine($"{token} {flag}");
-        token = "";
+    static void GenerateToken(ref string token, ref string state, string flag, StreamWriter w, StreamReader r)
+    { 
+        //if(!char.IsWhiteSpace(token[0]))
+        w.WriteLine($"{token} {flag}");
+        Console.WriteLine($"Token Generated: {token} {flag}");
         state = "0";
+        token = "";
+    }
+
+    static void GenerateToken(char token, string flag, StreamWriter w)
+    {
+        w.WriteLine($"{token} {flag}");
+        Console.WriteLine($"Token Generated: {token} {flag}");
     }
 
     static string GetDelimiter(char d)
@@ -73,10 +84,9 @@ class TokenGenerator
             return "$LP";
         if (d == ')') 
             return "$RP";
-        if (d == '+' || d == '-') 
+        if (d == '+' || d == '–') 
             return "$addop";
-            
-        return "";
+        return "poop";
     }
 
     static string ReservedWordCheck(string w)
@@ -119,19 +129,21 @@ class TokenGenerator
         // Windows Dir: C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\java0.txt
         // Linux Dir: /home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/java0.txt
         using (StreamReader reader = new StreamReader(GetOsDir()))
+        using (StreamWriter writer = new StreamWriter("/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/tokens.txt"))
         {
             string buffer = "";
             string currentState = "0";
             int intChar;
             char newChar;
-            bool breaker = true;
-            while ((intChar = reader.Read()) != -1 && breaker)
+            bool breaker = false;
+            while ((intChar = reader.Read()) != -1 && !breaker)
             {
                 newChar = (char)intChar;
                 int newCharType = GetCharType(newChar);
                 string nextState = fsa[int.Parse(currentState)+1, newCharType];
-                //Console.WriteLine($"{newChar} read in");
-                //Console.WriteLine($"State moved to {nextState}");
+                bool readNextChar = true;
+                Console.WriteLine($"{newChar} read in");
+                Console.WriteLine($"State moved to {nextState}");
                 switch(int.Parse(currentState))
                 {
                     case 0: // starting state
@@ -141,14 +153,13 @@ class TokenGenerator
                                 currentState = nextState;
                                 break;
                             case 1: // invalid character
-                                Console.WriteLine("Error: Invalid character");
+                                Console.WriteLine("Error: Invalid character " + newChar);
                                 //buffer += newChar;
-                                breaker = true;
                                 //GenerateToken(ref buffer, ref currentState,"<inval>");
                                 break;
-                            case 2 or 20 or 21 or 22 or 23 or 24 or 25: // final state reached
+                            case 2 or 20 or 21 or 22 or 23 or 24 or 25 or 26 or 27: // final state reached
                                 buffer += newChar;
-                                GenerateToken(ref buffer, ref currentState, GetDelimiter(newChar));
+                                GenerateToken(ref buffer, ref currentState, GetDelimiter(newChar), writer, reader);
                                 break;
                             case 3 or 5 or 7 or 9 or 11 or 14: // char added to buffer
                                 currentState = nextState;
@@ -164,10 +175,14 @@ class TokenGenerator
                                 currentState = nextState;
                                 break;
                             case 4: // end of numlitbreakbreak
-                                GenerateToken(ref buffer, ref currentState, "numlit");
+                                GenerateToken(ref buffer, ref currentState, "numlit", writer, reader);
+                                if(GetCharType(newChar) > 1 && GetCharType(newChar) < 15)
+                                    GenerateToken(newChar, GetDelimiter(newChar), writer);
                                 break;
                             case 6:
-                                GenerateToken(ref buffer, ref currentState, ReservedWordCheck(buffer));
+                                GenerateToken(ref buffer, ref currentState, ReservedWordCheck(buffer), writer, reader);
+                                if(GetCharType(newChar) > 1 && GetCharType(newChar) < 15)
+                                    GenerateToken(newChar, GetDelimiter(newChar), writer);
                                 break;
                         }
                         break;
@@ -175,32 +190,26 @@ class TokenGenerator
                         switch (int.Parse(nextState))
                         {
                             case 10:
-                                GenerateToken(ref buffer, ref currentState, "$mop");
+                                GenerateToken(ref buffer, ref currentState, "$mop", writer, reader);
                                 break;
                             case 8 or 9:
                                 currentState = nextState;
                                 break;
                         }
                         break;
-                    case 9:
+                    case 9: // comment state
                         currentState = nextState;
                         break;
                     case 11 or 14 or 17:
                         switch (int.Parse(nextState))
                         {
-                            case 12 or 15 or 18:
+                            case 12 or 13 or 15 or 16 or 18 or 19:
                                 buffer += newChar;
-                                GenerateToken(ref buffer, ref currentState, $"${buffer}");
-                                break;
-                            case 13 or 16 or 19:
-                                buffer += newChar;
-                                GenerateToken(ref buffer, ref currentState, $"${buffer}");
+                                GenerateToken(ref buffer, ref currentState, $"${buffer}", writer, reader);
                                 break;
                         }
                         break;
-                        
                 }
-                
             }
         }
         
