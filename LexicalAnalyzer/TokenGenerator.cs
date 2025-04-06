@@ -116,7 +116,8 @@ class TokenGenerator
     }
     internal void Run()
     {
-        string[,] fsa = new FiniteStateTable().GetFiniteStateTable("/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/FSA1.xlsx");
+        string[,] fsa = new FiniteStateTable().GetFiniteStateTable(
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FSA1.xlsx"));
         //List<string> tokens = new List<string>();
         for (int i = 0; i < fsa.GetLength(0); i++)
         {
@@ -128,8 +129,8 @@ class TokenGenerator
         }
         // Windows Dir: C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\java0.txt
         // Linux Dir: /home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/java0.txt
-        using (StreamReader reader = new StreamReader(GetOsDir()))
-        using (StreamWriter writer = new StreamWriter("/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/tokens.txt"))
+        using (StreamReader reader = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PGM1.txt")))
+        using (StreamWriter writer = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tokens.txt")))
         {
             string buffer = "";
             string currentState = "0";

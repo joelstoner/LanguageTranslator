@@ -55,7 +55,7 @@ public class SymbolTableGenerator
     internal void Run()
     {
         string[,] fsa = new FiniteStateTable().GetFiniteStateTable
-            ("/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/FSA2.xlsx");
+            (Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FSA2.xlsx"));
         for (int i = 0; i < fsa.GetLength(0); i++) // displays 2nd fsa
         {
             for (int j = 0; j < fsa.GetLength(1); j++)
@@ -70,9 +70,9 @@ public class SymbolTableGenerator
         bool keepRunning = true;
         
         using (StreamReader reader = 
-               new StreamReader("/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/tokens.txt"))
+               new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tokens.txt")))
         using (StreamWriter writer =
-               new StreamWriter("/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/SymbolTable.txt"))
+               new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SymbolTable.txt")))
         {
             try
             {
