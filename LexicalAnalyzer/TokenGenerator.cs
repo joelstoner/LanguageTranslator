@@ -8,11 +8,11 @@ class TokenGenerator
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return "C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\java0.txt";
+            return "C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\PGM1.txt";
         }
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            return "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/java0.txt";
+            return "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/PGM1.txt";
         }
         return null;
     }
@@ -114,9 +114,9 @@ class TokenGenerator
         return "var";
 
     }
-    static void Main(string[]args)
+    internal void Run()
     {
-        string[,] fsa = new FiniteStateTable().GetFiniteStateTable();
+        string[,] fsa = new FiniteStateTable().GetFiniteStateTable("/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/FSA1.xlsx");
         //List<string> tokens = new List<string>();
         for (int i = 0; i < fsa.GetLength(0); i++)
         {
@@ -142,8 +142,7 @@ class TokenGenerator
                 int newCharType = GetCharType(newChar);
                 string nextState = fsa[int.Parse(currentState)+1, newCharType];
                 bool readNextChar = true;
-                Console.WriteLine($"{newChar} read in");
-                Console.WriteLine($"State moved to {nextState}");
+                Console.WriteLine($"Moved from state {currentState} to {nextState}: {newChar} read in");
                 switch(int.Parse(currentState))
                 {
                     case 0: // starting state
@@ -176,12 +175,12 @@ class TokenGenerator
                                 break;
                             case 4: // end of numlitbreakbreak
                                 GenerateToken(ref buffer, ref currentState, "numlit", writer, reader);
-                                if(GetCharType(newChar) > 1 && GetCharType(newChar) < 15)
+                                if(GetCharType(newChar) > 3 && GetCharType(newChar) < 15)
                                     GenerateToken(newChar, GetDelimiter(newChar), writer);
                                 break;
                             case 6:
                                 GenerateToken(ref buffer, ref currentState, ReservedWordCheck(buffer), writer, reader);
-                                if(GetCharType(newChar) > 1 && GetCharType(newChar) < 15)
+                                if(GetCharType(newChar) > 3 && GetCharType(newChar) < 15)
                                     GenerateToken(newChar, GetDelimiter(newChar), writer);
                                 break;
                         }
@@ -208,6 +207,9 @@ class TokenGenerator
                                 GenerateToken(ref buffer, ref currentState, $"${buffer}", writer, reader);
                                 break;
                         }
+                        break;
+                    default:
+                        GenerateToken(ref buffer, ref currentState, "$", writer, reader);
                         break;
                 }
             }

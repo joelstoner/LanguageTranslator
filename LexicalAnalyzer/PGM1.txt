@@ -1,0 +1,6 @@
+CLASS PGM1{
+CONST M = 7, N = 85;
+VAR X, Y, Z;
+/* comment */
+X = M + Y * Z + 12;
+}
