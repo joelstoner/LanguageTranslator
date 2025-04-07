@@ -1,5 +1,5 @@
 CLASS $class
-PGMX var
+PGM1 var
 { $LB
 CONST $const
 M var

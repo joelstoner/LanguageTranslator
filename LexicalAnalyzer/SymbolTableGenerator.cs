@@ -67,7 +67,8 @@ public class SymbolTableGenerator
         }
         
         string token, flag, varName = "", line;
-        int state = 0, flagType, symbolCount = 1, codeAddress = 0, dataAddress = 0, varValue = 0, nextState;
+        int state = 0, flagType, symbolCount = 1, codeAddress = 0, 
+            dataAddress = 0, varValue = 0, nextState, opCount = 0;
         bool keepRunning = true;
         
         string parentDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
@@ -82,6 +83,8 @@ public class SymbolTableGenerator
                     flag = line.Substring(line.LastIndexOf(' ') + 1);
                     flagType = GetFlagType(state, flag);
                     nextState = int.Parse(fsa[state + 1, flagType]);
+                    if(flag.Contains("$addop"))
+                        opCount++;
                     switch (state)
                     {
                         case 0:
@@ -326,7 +329,7 @@ public class SymbolTableGenerator
                 Console.WriteLine("EOF reached");
             }
 
-            for (int a = 1; a <= 3; a++) // generate temp variables
+            for (int a = 1; a <= opCount; a++) // generate temp variables
             {
                 writer.Write("{0,-3}", symbolCount);
                 writer.Write("{0,-15}", $"T{a}");

@@ -10,7 +10,7 @@ public class Program
         tokenGenerator.Run();
         SymbolTableGenerator symbolTableGenerator = new SymbolTableGenerator();
         symbolTableGenerator.Run();
-        //SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer();
-        //syntaxAnalyzer.Run();
+        SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer();
+        syntaxAnalyzer.Run();
     }
 }

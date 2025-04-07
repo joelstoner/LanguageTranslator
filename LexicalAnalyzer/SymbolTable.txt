@@ -1,4 +1,4 @@
-1  PGMX           $pgmname       n/a   0     CS
+1  PGM1           $pgmname       n/a   0     CS
 2  M              constvar       7     0     DS
 3  N              constvar       85    2     DS
 4  X              var            null  4     DS
@@ -8,4 +8,3 @@
 8  2              numlit         2     12    DS
 9  T1             var            null  14    DS
 10 T2             var            null  16    DS
-11 T3             var            null  18    DS
