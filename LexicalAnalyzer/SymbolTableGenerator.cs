@@ -52,6 +52,7 @@ public class SymbolTableGenerator
             return 11;
         return 10;
     }
+    
     internal void Run()
     {
         string[,] fsa = new FiniteStateTable().GetFiniteStateTable
@@ -69,10 +70,9 @@ public class SymbolTableGenerator
         int state = 0, flagType, symbolCount = 1, codeAddress = 0, dataAddress = 0, varValue = 0, nextState;
         bool keepRunning = true;
         
-        using (StreamReader reader = 
-               new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tokens.txt")))
-        using (StreamWriter writer =
-               new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SymbolTable.txt")))
+        string parentDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
+        using (StreamReader reader = new StreamReader(Path.Combine(parentDir, "tokens.txt")))
+        using (StreamWriter writer = new StreamWriter(Path.Combine(parentDir, "SymbolTable.txt")))
         {
             try
             {

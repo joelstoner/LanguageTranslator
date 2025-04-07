@@ -1,6 +1,7 @@
-CLASS PGM1{
+CLASS PGMX{
 CONST M = 7, N = 85;
-VAR X, Y, Z;
-/* comment */
-X = M + Y * Z + 12;
+VAR X, Y, Z; 
+Y = M + 16;
+X = 2 + Y;
+Z = X + M + 2;
 }

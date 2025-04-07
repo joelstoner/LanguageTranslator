@@ -39,6 +39,11 @@ C:/Users/jston/RiderProjects/LanguageTranslator/LexicalAnalyzer/obj/Debug/net8.0
 C:/Users/jston/RiderProjects/LanguageTranslator/LexicalAnalyzer/obj/Debug/net8.0/ref/LexicalAnalyzer.dll
 /home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/obj/Debug/net8.0/LexicalAnalyzer.sourcelink.json
 C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\LexicalAnalyzer.exe
+C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\FSA1.xlsx
+C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\FSA2.xlsx
+C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\PGM1.txt
+C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\SymbolTable.txt
+C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\tokens.txt
 C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\LexicalAnalyzer.deps.json
 C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\LexicalAnalyzer.runtimeconfig.json
 C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\LexicalAnalyzer.dll
@@ -58,8 +63,3 @@ C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\obj\Debug\net8.0
 C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\obj\Debug\net8.0\LexicalAnalyzer.pdb
 C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\obj\Debug\net8.0\LexicalAnalyzer.genruntimeconfig.cache
 C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\obj\Debug\net8.0\ref\LexicalAnalyzer.dll
-C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\FSA1.xlsx
-C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\FSA2.xlsx
-C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\PGM1.txt
-C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\SymbolTable.txt
-C:\Users\addsc\RiderProjects\LanguageTranslator\LexicalAnalyzer\bin\Debug\net8.0\tokens.txt

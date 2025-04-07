@@ -80,9 +80,6 @@ class FiniteStateTable
 
     internal string[,] GetFiniteStateTable(string path)
     {
-        // Windows Address: C:\Users\jston\RiderProjects\LanguageTranslator\LexicalAnalyzer\ExcelSymbolTable.xlsx\
-        // Linux Address: 
-        //string xlfile = GetOsDir();
         string xlfile = path;
         int[] dimensions = GetSymbolTableDimensions(xlfile);
         string[,] symbolTable = new string[dimensions[0], dimensions[1]];

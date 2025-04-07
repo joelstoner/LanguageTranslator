@@ -4,18 +4,6 @@ namespace LanguageTranslator;
 
 class TokenGenerator
 {
-    private static string GetOsDir()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return "C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\PGM1.txt";
-        }
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            return "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/PGM1.txt";
-        }
-        return null;
-    }
     static int GetCharType(char ch)
     {
         if (char.IsLetter(ch))
@@ -55,7 +43,6 @@ class TokenGenerator
 
     static void GenerateToken(ref string token, ref string state, string flag, StreamWriter w, StreamReader r)
     { 
-        //if(!char.IsWhiteSpace(token[0]))
         w.WriteLine($"{token} {flag}");
         Console.WriteLine($"Token Generated: {token} {flag}");
         state = "0";
@@ -118,7 +105,7 @@ class TokenGenerator
     {
         string[,] fsa = new FiniteStateTable().GetFiniteStateTable(
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FSA1.xlsx"));
-        //List<string> tokens = new List<string>();
+        
         for (int i = 0; i < fsa.GetLength(0); i++)
         {
             for (int j = 0; j < fsa.GetLength(1); j++)
@@ -127,10 +114,10 @@ class TokenGenerator
             }
             Console.WriteLine();
         }
-        // Windows Dir: C:\\Users\\jston\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\java0.txt
-        // Linux Dir: /home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/java0.txt
-        using (StreamReader reader = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PGM1.txt")))
-        using (StreamWriter writer = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tokens.txt")))
+
+        string parentDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
+        using (StreamReader reader = new StreamReader(Path.Combine(parentDir, "PGM1.txt")))
+        using (StreamWriter writer = new StreamWriter(Path.Combine(parentDir, "tokens.txt")))
         {
             string buffer = "";
             string currentState = "0";
@@ -154,8 +141,6 @@ class TokenGenerator
                                 break;
                             case 1: // invalid character
                                 Console.WriteLine("Error: Invalid character " + newChar);
-                                //buffer += newChar;
-                                //GenerateToken(ref buffer, ref currentState,"<inval>");
                                 break;
                             case 2 or 20 or 21 or 22 or 23 or 24 or 25 or 26 or 27: // final state reached
                                 buffer += newChar;
