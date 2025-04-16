@@ -1,0 +1,6 @@
+CLASS PGM2 {
+CONST A = 3, Sam = 2;
+VAR Joe, Fred;
+Joe = A + 36 / Sam;
+Fred = A + Sam;
+}

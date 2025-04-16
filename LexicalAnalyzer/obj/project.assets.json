@@ -137,19 +137,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\addsc\\.nuget\\packages\\": {}
+    "/home/joelstoner/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\addsc\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\LexicalAnalyzer.csproj",
+      "projectUniqueName": "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/LexicalAnalyzer.csproj",
       "projectName": "LexicalAnalyzer",
-      "projectPath": "C:\\Users\\addsc\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\LexicalAnalyzer.csproj",
-      "packagesPath": "C:\\Users\\addsc\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\addsc\\RiderProjects\\LanguageTranslator\\LexicalAnalyzer\\obj\\",
+      "projectPath": "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/LexicalAnalyzer.csproj",
+      "packagesPath": "/home/joelstoner/.nuget/packages/",
+      "outputPath": "/home/joelstoner/RiderProjects/TestProject/LexicalAnalyzer/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\addsc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/joelstoner/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -172,8 +172,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.200"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -200,7 +199,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files (x86)\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/snap/dotnet-sdk/current/sdk/8.0.407/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

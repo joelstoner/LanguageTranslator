@@ -115,7 +115,9 @@ class TokenGenerator
             Console.WriteLine();
         }
 
-        string parentDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
+        string parentDir = Path.GetFullPath(
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..")
+        );
         using (StreamReader reader = new StreamReader(Path.Combine(parentDir, "PGM1.txt")))
         using (StreamWriter writer = new StreamWriter(Path.Combine(parentDir, "tokens.txt")))
         {

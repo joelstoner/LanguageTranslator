@@ -71,7 +71,9 @@ public class SymbolTableGenerator
             dataAddress = 0, varValue = 0, nextState, opCount = 0;
         bool keepRunning = true;
         
-        string parentDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
+        string parentDir = Path.GetFullPath(
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..")
+        );
         using (StreamReader reader = new StreamReader(Path.Combine(parentDir, "tokens.txt")))
         using (StreamWriter writer = new StreamWriter(Path.Combine(parentDir, "SymbolTable.txt")))
         {
@@ -329,7 +331,7 @@ public class SymbolTableGenerator
                 Console.WriteLine("EOF reached");
             }
 
-            for (int a = 1; a <= opCount; a++) // generate temp variables
+            for (int a = 1; a <= opCount + 3; a++) // generate temp variables
             {
                 writer.Write("{0,-3}", symbolCount);
                 writer.Write("{0,-15}", $"T{a}");
