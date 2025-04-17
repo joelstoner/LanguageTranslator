@@ -5,11 +5,11 @@ public class Program
 {
     static void Main(string[] args)
     {
-        TokenGenerator tokenGenerator = new TokenGenerator();
+        var tokenGenerator = new TokenGenerator();
         tokenGenerator.Run();
-        SymbolTableGenerator symbolTableGenerator = new SymbolTableGenerator();
+        var symbolTableGenerator = new SymbolTableGenerator();
         symbolTableGenerator.Run();
-        Parser parser = new Parser();
+        var parser = new Parser();
         parser.Run();
     }
 }

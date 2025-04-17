@@ -1,7 +1,10 @@
 CLASS PGM1{
+/* declarations */ 
 CONST M = 7, N = 85;
 VAR X, Y, Z; 
+/* operations */
 Y = M + 16;
 X = 2 + Y;
-Z = X + M + 2;
+Z = X + M * 2; 
+/* IF Y >= Z THEN X = 3; */
 }

@@ -73,6 +73,8 @@ class TokenGenerator
             return "$RP";
         if (d == '+' || d == '–') 
             return "$addop";
+        if (d == '>')
+            return "$relop";
         return "poop";
     }
 
@@ -148,7 +150,7 @@ class TokenGenerator
                                 buffer += newChar;
                                 GenerateToken(ref buffer, ref currentState, GetDelimiter(newChar), writer, reader);
                                 break;
-                            case 3 or 5 or 7 or 9 or 11 or 14: // char added to buffer
+                            case 3 or 5 or 7 or 9 or 11 or 14 or 17 or 18: // char added to buffer
                                 currentState = nextState;
                                 buffer += newChar;
                                 break;
@@ -181,18 +183,23 @@ class TokenGenerator
                                 break;
                             case 8 or 9:
                                 currentState = nextState;
+                                buffer = "";
                                 break;
                         }
                         break;
-                    case 9: // comment state
+                    case 8 or 9: // comment state
                         currentState = nextState;
                         break;
                     case 11 or 14 or 17:
                         switch (int.Parse(nextState))
                         {
-                            case 12 or 13 or 15 or 16 or 18 or 19:
+                            case 12 or 13 or 15 or 16 or 18:
                                 buffer += newChar;
                                 GenerateToken(ref buffer, ref currentState, $"${buffer}", writer, reader);
+                                break;
+                            case 19:
+                                buffer += newChar;
+                                GenerateToken(ref buffer, ref currentState, $"$>=", writer, reader);
                                 break;
                         }
                         break;
@@ -202,6 +209,5 @@ class TokenGenerator
                 }
             }
         }
-        
     }
 }

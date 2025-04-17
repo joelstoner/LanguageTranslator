@@ -34,7 +34,7 @@ Z var
 X var
 + $addop
 M var
-+ $addop
+* $mop
 2 numlit
 ; $semi
 } $RB
