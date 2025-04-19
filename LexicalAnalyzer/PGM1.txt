@@ -3,8 +3,8 @@ CLASS PGM1{
 CONST M = 7, N = 85;
 VAR X, Y, Z; 
 /* operations */
-Y = M + 16;
+Y = M / 16;
 X = 2 + Y;
-Z = X + M * 2; 
-/* IF Y >= Z THEN X = 3; */
+Z = 2 + (5 / (X + 3)); 
+IF Y >= Z THEN X = 3;
 }
