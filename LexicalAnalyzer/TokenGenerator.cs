@@ -100,6 +100,10 @@ class TokenGenerator
             return "$odd";
         if (w == "CLASS")
             return "$class";
+        if (w == "INPUT")
+            return "$input";
+        if (w == "OUTPUT")
+            return "$output";
         return "var";
 
     }

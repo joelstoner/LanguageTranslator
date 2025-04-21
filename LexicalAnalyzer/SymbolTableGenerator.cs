@@ -323,7 +323,7 @@ public class SymbolTableGenerator
                             keepRunning = false;
                             break;
                     }
-
+                    
                 }
             }
             catch (NullReferenceException) // catches to EOF condition
@@ -342,7 +342,6 @@ public class SymbolTableGenerator
                 symbolCount++;
                 dataAddress += 2;
             }
-
         }
     }
 }

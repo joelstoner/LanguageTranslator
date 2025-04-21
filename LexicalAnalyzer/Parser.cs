@@ -65,13 +65,20 @@
 
     public void Print()
     {
-        try
+        string parentDir = Path.GetFullPath(
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..")
+        );
+        using (StreamWriter writer = new StreamWriter(Path.Combine(parentDir,"Quads.txt")))
         {
-            Console.WriteLine($"QUAD: {Operator.Name} {Argument1.Name} {Argument2.Name} {Result.Name}");
-        }
-        catch
-        {
-            Console.WriteLine($"QUAD Error: {Operator.Name}");
+            try
+            {
+                Console.WriteLine($"QUAD: {Operator.Name} {Argument1.Name} {Argument2.Name} {Result.Name}");
+                //writer.WriteLine($"{Operator.Name} {Argument1.Name} {Argument2.Name} {Result.Name}");
+            }
+            catch
+            {
+                Console.WriteLine($"QUAD Error: {Operator.Name}");
+            }
         }
     }
     }
@@ -107,7 +114,7 @@
 
     static bool ShouldStartStack(string s)
     {
-        if (s == "var" || s == "$if" || s == "$then") 
+        if (s == "var" || s == "$if" || s == "$then" || s == "$output" || s == "$while" || s == "$do") 
             return true;
         return false;
     }
@@ -158,9 +165,18 @@
                     break;
             }
             
+            bool compoundMode = false, whileMode = false;
+            var labelStack = new Queue<Symbol>();
+            var waitLabelStack = new Queue<Symbol>();
+            int labelCount = 0;
+            for (int i = 1; i <= 12; i++)
+                labelStack.Enqueue(new Symbol($"L{i}", "N"));
+            for (int i = 1; i <= 12; i++)
+                labelStack.Enqueue(new Symbol($"L{i}", "N"));
             // searches for operation sentences
             while ((line = reader.ReadLine()) != null)
             {
+                Console.WriteLine($"Check point 1: {line}");
                 // if not valid sentence, continues running 
                 token = line.Substring(0, line.IndexOf(' '));
                 flag = line.Substring(line.LastIndexOf(' ') + 1);
@@ -168,26 +184,50 @@
                 var stackSymbols = new Stack<Symbol>();
                 var stringSymbols = new Queue<Symbol>();
                 var tempStack = new Queue<Symbol>();
-                var labelStack = new Queue<Symbol>();
-                bool endOfIf = false;
-                for (int i = 1; i <= 12; i++)
-                    labelStack.Enqueue(new Symbol($"L{i}", "N"));
-                for (int i = 1; i <= 12; i++)
-                    labelStack.Enqueue(new Symbol($"L{i}", "N"));
                 
+                
+                if (compoundMode && token == "}")
+                {
+                    Console.WriteLine("THE CODE RAN!");
+                    Quad q = new Quad();
+                    q.Operator = waitLabelStack.Dequeue();
+                    quadStack.Enqueue(q);
+                    q.Print();
+                    compoundMode = false;
+                    continue;
+                }
+                if (whileMode && token == "}")
+                {
+                    Console.WriteLine("THE CODE RAN!");
+                    Quad q = new Quad();
+                    q.Operator = new Symbol("JUMP", "$jump");
+                    q.Argument1 = waitLabelStack.Dequeue();
+                    quadStack.Enqueue(q);
+                    q.Print();
+                    whileMode = false;
+                    
+                    q = new Quad();
+                    q.Operator = waitLabelStack.Dequeue();
+                    quadStack.Enqueue(q);
+                    q.Print();
+                    whileMode = false;
+                    continue;
+                }
                 if (!ShouldStartStack(flag))
                 {
                     while ((line = reader.ReadLine()) != null)
                     {
+                        Console.WriteLine($"Check point 2: {line}");
                         token = line.Substring(0, line.IndexOf(' '));
                         if (token == ";")
                             break;
                     }
-
                     //continue;
                 }
                 else //if (flag == "var")
                 {
+                    if (flag == "$if")
+                        compoundMode = true;
                     // sentence with operations found
                     Console.WriteLine($"MAKING STACK! @{token}");
                     for (int i = 1; i <= 12; i++)
@@ -197,6 +237,7 @@
                     stringSymbols.Enqueue(symbol);
                     while ((line = reader.ReadLine()) != null)
                     {
+                        Console.WriteLine($"Check point 3: {line}");
                         token = line.Substring(0, line.IndexOf(' '));
                         flag = line.Substring(line.LastIndexOf(' ') + 1);
                         symbol = new Symbol(token, flag);
@@ -227,6 +268,36 @@
                         {
                         }
                         
+                        // while shit
+                        if (stringSymbols.Peek().Name == "WHILE")
+                        {
+                            Quad quad = new Quad();
+                            quad.Operator = stringSymbols.Dequeue();
+                            quad.Print();
+                            quadStack.Enqueue(quad);
+
+                            quad = new Quad();
+                            quad.Operator = labelStack.Peek();
+                            waitLabelStack.Enqueue(labelStack.Dequeue());
+                            quad.Print();
+                            quadStack.Enqueue(quad);
+                            
+                            quad = new Quad();
+                            quad.Argument1 = (stringSymbols.Dequeue());
+                            quad.Operator = stringSymbols.Dequeue();
+                            quad.Argument2 = (stringSymbols.Dequeue());
+                            //quad.AddSymbol(stringSymbols.Dequeue());
+                            quad.Result = labelStack.Peek();
+                            waitLabelStack.Enqueue(labelStack.Dequeue());
+                            quad.Print();
+                            
+                            quadStack.Enqueue(quad);
+                            stringSymbols.Dequeue();
+                            stringSymbols.Dequeue();
+                            whileMode = true;
+                            continue;
+                        }
+                        
                         // shift any operand
                         if (!stringSymbols.Peek().IsOperator())
                         {
@@ -249,6 +320,7 @@
                         if (fsymbol == null)
                             break;
                         
+                        
                         Console.Write("CURRENT STACK: ");
                         PrintList(stackSymbols.Reverse().ToList());
                         Console.Write("CURRENT STRING: ");
@@ -265,7 +337,7 @@
                             items.Remove(new Symbol("(", "$LP"));
                             stackSymbols = new Stack<Symbol>(items);
                         }
-                        if (stringSymbols.Peek().Name == "IF")
+                        if (stringSymbols.Peek().Name == "IF" )
                         {
                             Quad quad = new Quad();
                             stackSymbols.Push(stringSymbols.Dequeue());
@@ -275,6 +347,7 @@
                             //stackSymbols.Pop();
                             continue;
                         }
+                        
                         if (fvalue < gvalue)
                         {
                             Console.WriteLine($"{stringSymbols.Peek().Name} pushed to stack");
@@ -294,325 +367,69 @@
                             }
                             if (quad.Operator.Name == ";" || quad.Operator.Name == "IF")
                                 continue;
+                            if (quad.Operator.Name == ">")
+                                quad.Result = new Symbol("LE", "$stuff");
+                            if (quad.Operator.Name == ">=")
+                                quad.Result = new Symbol("L", "$stuff");
+                                    
                             
                             stackSymbols.Push(tempStack.Peek());
                             quad.AddSymbol(tempStack.Dequeue());
                             if (quad.Operator.Name.Contains("="))
                                 quad.Result = new Symbol("N", "N");
                             
-
                             quadStack.Enqueue(quad);
                             quad.Print();
                             if (stringSymbols.Peek().Name == "THEN")
                             {
-                                /*stringSymbols.Dequeue();
-                                var items = stackSymbols.Reverse().ToList();
-                                items.Remove(new Symbol("IF", "$if"));
-                                stackSymbols = new Stack<Symbol>(items);*/
                                 quad = new Quad();
                                 stackSymbols.Push(stringSymbols.Dequeue());
                                 quad.AddSymbol(stackSymbols.Pop());
-                                quad.AddSymbol(new Symbol("LE", "$label"));
-                                quad.AddSymbol(labelStack.Dequeue());
+                                quadStack.Last().Result = labelStack.Peek();
+                                Console.WriteLine($"{labelStack.Peek().Name} THIS FUCLONG");
+                                waitLabelStack.Enqueue(labelStack.Dequeue());
+                                Console.WriteLine($"{waitLabelStack.Peek().Name} THIS FUCLONG");
                                 quad.Print();
                                 quadStack.Enqueue(quad);
+                                //labelCount+=2;
+                                compoundMode = true;
+                                stringSymbols.Dequeue();
                             }
+                            /*if (labelCount > 0)
+                            {
+                                labelCount--;
+                                if (labelCount == 0)
+                                {
+                                    Quad q = new Quad();
+                                    q.Operator = waitLabelStack.Dequeue();
+                                    quadStack.Enqueue(q);
+                                    q.Print();
+                                }
+                            }*/
                         }
                     }
                 }
-                /*else if (flag == "$if")
-                {
-                    Console.WriteLine("IF FOUND");
-                    Console.WriteLine($"MAKING STACK! @{token}");
-                    for (int i = 1; i <= 12; i++)
-                        tempStack.Enqueue(new Symbol($"T{i}", "numlit"));
+            }
 
-                    // construct string
-                    stringSymbols.Enqueue(symbol);
-                    while ((line = reader.ReadLine()) != null)
+            using (StreamWriter writer = new StreamWriter(Path.Combine(parentDir, "Quads.txt")))
+            {
+                foreach (var q in quadStack)
+                {
+                    try
                     {
-                        token = line.Substring(0, line.IndexOf(' '));
-                        flag = line.Substring(line.LastIndexOf(' ') + 1);
-                        symbol = new Symbol(token, flag);
-                        stringSymbols.Enqueue(symbol);
-                        if (token == "}")
-                            break;
+                        Console.WriteLine(
+                            $"QUAD: {q.Operator.Name} {q.Argument1.Name} {q.Argument2.Name} {q.Result.Name}");
+                        writer.WriteLine($"{q.Operator.Name} {q.Argument1.Name} {q.Argument2.Name} {q.Result.Name}");
+                    }
+                    catch
+                    {
+                        Console.WriteLine($"QUAD Error: {q.Operator.Name}");
                     }
 
-                    stackSymbols.Push(symbol);
-                    Console.Write("HERES THE STRING:");
-                    PrintList(stringSymbols.ToList());
-                    Console.Write("HERES THE STACK:");
-                    PrintList(stackSymbols.ToList());
                 }
-                else if (flag == "$while")
-                {
-                    
-                }
-                */
             }
-            foreach (var q in quadStack)
-            {
-                q.Print();
-            }    
         }
-    } 
+    }
     
     }
-
-
-    /*
-    var parentDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", ".."));
-    var tokenFile = Path.Combine(parentDir, "tokens.txt");
-    using (var reader = new StreamReader(tokenFile))
-    {
-       string line, token, flag;
-       Symbol symbol0, symbol1 = new Symbol("", "");
-       var varList   = new List<Symbol>();
-       var quadStack = new Queue<Quad>();
-
-       while ((line = reader.ReadLine()?.Trim()) != null)
-       {
-           token   = line.Substring(0, line.IndexOf(' '));
-           flag    = line.Substring(line.LastIndexOf(' ') + 1);
-           symbol0 = symbol1;
-           symbol1 = new Symbol(token, flag);
-
-           if (!StartStack(symbol1, varList))
-           {
-               Console.WriteLine("NEXT!");
-               if (flag == "var")
-                   varList.Add(symbol1);
-           }
-           else
-           {
-               Console.WriteLine($"MAKING STACK! @{token}");
-               var stackSymbols  = new Stack<Symbol>();
-               var stringSymbols = new Queue<Symbol>();
-               var tempStack     = new Queue<Symbol>();
-
-               for (int i = 1; i <= 12; i++)
-                   tempStack.Enqueue(new Symbol($"T{i}", "numlit"));
-
-               if (symbol0.Type == "var" || symbol0.Type == "numlit")
-                   stringSymbols.Enqueue(symbol0);
-
-               // read until semicolon
-               while (symbol1.GetSymbolType() != 11)
-               {
-                   stringSymbols.Enqueue(symbol1);
-                   line = reader.ReadLine()?.Trim();
-                   if (line == null) break;
-                   Console.WriteLine($"Stack maker line: {line}");
-
-                   token   = line.Substring(0, line.IndexOf(' '));
-                   flag    = line.Substring(line.LastIndexOf(' ') + 1);
-                   symbol1 = new Symbol(token, flag);
-               }
-
-               stackSymbols.Push(symbol1);
-               stringSymbols.Enqueue(new Symbol(";", "$semi"));
-
-               Console.WriteLine("HERES THE STRING");
-               PrintList(stringSymbols.ToList());
-
-               Console.WriteLine("HERES THE STACK");
-               foreach (var s in stackSymbols)
-                   Console.WriteLine($"{s.Name} : {s.Type}");
-
-               // operator‑precedence loop
-               while (true)
-               {
-                   // both semicolons? done.
-                   if (stackSymbols.Peek().GetSymbolType() == 11 &&
-                       stringSymbols.Peek().GetSymbolType() == 11)
-                   {
-                       Console.WriteLine("this code ran");
-                       break;
-                   }
-
-                   // shift any operand
-                   if (!stringSymbols.Peek().IsOperator())
-                   {
-                       Console.WriteLine($"NON TERMINAL PUSHED: {stringSymbols.Peek().Name}");
-                       stackSymbols.Push(stringSymbols.Dequeue());
-                       continue;
-                   }
-
-                   // find the topmost operator on stack
-                   Symbol fsymbol = null;
-                   foreach (var sym in stackSymbols)
-                   {
-                       if (sym.IsOperator())
-                       {
-                           fsymbol = sym;
-                           break;
-                       }
-                   }
-                   if (fsymbol == null)
-                       break;
-
-                   int fvalue = precFunc[0, fsymbol.GetSymbolType()];
-                   int gvalue = precFunc[1, stringSymbols.Peek().GetSymbolType()];
-                   Console.WriteLine($"f({fsymbol.Name})={fvalue} AND g({stringSymbols.Peek().Name})={gvalue}");
-
-                   if (fvalue < gvalue)
-                   {
-                       Console.WriteLine($"{stringSymbols.Peek().Name} pushed to stack");
-                       stackSymbols.Push(stringSymbols.Dequeue());
-                   }
-                   else
-                   {
-                       // reduce
-                       var quad = new Quad();
-                       while (quad.Count < 3 && stackSymbols.Count > 0)
-                           quad.AddSymbol(stackSymbols.Pop());
-
-                       if (quad.Operator.Name == ";")
-                           continue;
-                       if (quad.Operator.Name == "=")
-                           quad.Result = new Symbol("N", "N");
-                       else if (tempStack.Count > 0)
-                       {
-                           stackSymbols.Push(tempStack.Peek());
-                           quad.AddSymbol(tempStack.Dequeue());
-                       }
-
-                       quadStack.Enqueue(quad);
-                       quad.Print();
-                   }
-               }
-           }
-       }
-
-       foreach (var q in quadStack)
-           q.Print();
-    }
-
-    // 4) drive the parser
-    string parentDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", ".."));
-    using (var reader = new StreamReader(Path.Combine(parentDir, "tokens.txt")))
-    {
-       string line, token, flag;
-       Symbol symbol0, symbol1 = new Symbol("", "");
-       var varList = new List<Symbol>();
-       var quadStack = new Queue<Quad>();
-       
-       while ((line = reader.ReadLine()?.Trim()) != null)
-       {
-           token = line.Substring(0, line.IndexOf(' '));
-           flag  = line.Substring(line.LastIndexOf(' ') + 1);
-           symbol0 = symbol1;
-           symbol1 = new Symbol(token, flag);
-
-           if (!StartStack(symbol1, varList))
-           {
-               Console.WriteLine("NEXT!");
-               if (flag == "var") 
-                   varList.Add(symbol1);
-           }
-           else
-           {
-               Console.WriteLine($"MAKING STACK! @{token}");
-               var stackSymbols  = new Stack<Symbol>();
-               var stringSymbols = new Queue<Symbol>();
-               var tempStack = new Queue<Symbol>();
-               for (int i = 1; i <= 12; i++)
-                   tempStack.Enqueue(new Symbol($"T{i}", "numlit"));
-               
-               if (symbol0.Type == "var" || symbol0.Type == "numlit")
-                   stringSymbols.Enqueue(symbol0);
-
-               // read until semicolon
-               while (symbol1.GetSymbolType() != 7)
-               {
-                   stringSymbols.Enqueue(symbol1);
-                   line = reader.ReadLine()?.Trim();
-                   if (line == null) break;
-                   Console.WriteLine($"Stack maker line: {line}");
-                   token = line.Substring(0, line.IndexOf(' '));
-                   flag  = line.Substring(line.LastIndexOf(' ') + 1);
-                   symbol1 = new Symbol(token, flag);
-               }
-
-               stackSymbols.Push(symbol1);
-               stringSymbols.Enqueue(new Symbol(";", "$semi"));
-
-               Console.WriteLine("HERES THE STRING");
-               PrintList(stringSymbols.ToList());
-
-               Console.WriteLine("HERES THE STACK");
-               foreach (var s in stackSymbols)
-                   Console.WriteLine($"{s.Name} : {s.Type}");
-
-               // operator‐precedence loop
-               while (true)
-               {
-                   // both semicolons? done.
-                   if (stackSymbols.Peek().GetSymbolType() == 7 &&
-                       stringSymbols.Peek().GetSymbolType() == 7)
-                   {
-                       Console.WriteLine("this fucking code ran");
-                       break;
-                   }
-                   // shift any operand
-                   if (!stringSymbols.Peek().IsOperator())
-                   {
-                       Console.WriteLine($"NON TERMINAL PUSHED: {stringSymbols.Peek().Name}");
-                       stackSymbols.Push(stringSymbols.Dequeue());
-                       continue;
-                   }
-                   // find the topmost operator on stack
-                   // Find the topmost operator on the stack without LINQ
-                   Symbol fsymbol = null;
-                   foreach (var sym in stackSymbols)
-                   {
-                       if (sym.IsOperator())
-                       {
-                           fsymbol = sym;
-                           break;
-                       }
-                   }
-                   if (fsymbol == null)
-                   {
-                       break;
-                   }
-                   
-                   int fvalue = precFunc[0, fsymbol.GetSymbolType()];
-                   int gvalue = precFunc[1, stringSymbols.Peek().GetSymbolType()];
-                   Console.WriteLine($"f({fsymbol.Name})={fvalue} AND g({stringSymbols.Peek().Name})={gvalue}");
-                   
-                   if (fvalue < gvalue)
-                   {
-                       Console.WriteLine($"{stringSymbols.Peek().Name} pushed to stack");
-                       stackSymbols.Push(stringSymbols.Dequeue());
-                   }
-                   else if (fvalue >= gvalue)
-                   {
-                       // reduce
-                       var quad = new Quad();
-                       while (quad.Count < 3 && stackSymbols.Count > 0)
-                           quad.AddSymbol(stackSymbols.Pop());
-                       if (quad.Operator.Name == ";")
-                           continue;
-                       if (quad.Operator.Name == "=")
-                           quad.Result = new Symbol("N", "N");
-                       else if (tempStack.Count > 0)
-                       {
-                           stackSymbols.Push(tempStack.Peek());
-                           quad.AddSymbol(tempStack.Dequeue());
-                       }
-                       quadStack.Enqueue(quad);
-                       quad.Print();
-                   }
-               }
-           }
-       }
-
-       foreach (var q in quadStack)
-       {
-           q.Print();
-       }
-    }
-    */
-
+    

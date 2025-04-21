@@ -11,5 +11,7 @@ public class Program
         symbolTableGenerator.Run();
         var parser = new Parser();
         parser.Run();
+        var assGen = new AssemblyGenerator();
+        assGen.Run();
     }
 }

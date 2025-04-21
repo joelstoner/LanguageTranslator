@@ -30,4 +30,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <ClCompile Include="test.cpp" />
+    </ItemGroup>
+
 </Project>

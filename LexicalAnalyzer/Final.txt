@@ -1,0 +1,40 @@
+    mov ax, [W]
+    mov [N], ax
+    mov ax, [OUTPUT]
+    mov [N], ax
+    mov dx, 0
+    mov ax, [M]
+    mov bx, [16]
+    div bx
+    mov [T1], ax
+    mov ax, [Y]
+    mov [N], ax
+    mov ax, [2]
+    add ax, [Y]
+    mov [T1], ax
+    mov ax, [X]
+    mov [N], ax
+    mov ax, [X]
+    add ax, [3]
+    mov [T1], ax
+    mov dx, 0
+    mov ax, [5]
+    mov bx, [T1]
+    div bx
+    mov [T2], ax
+    mov ax, [2]
+    add ax, [T2]
+    mov [T3], ax
+    mov ax, [Z]
+    mov [N], ax
+L1: 
+    mov ax, [Y]
+    cmp ax, [Z]
+    jl [L2], ax
+    mov ax, [X]
+    add ax, [2]
+    mov [T1], ax
+    mov ax, [X]
+    mov [N], ax
+    jmp L1
+L2: 

@@ -59,7 +59,7 @@ namespace LanguageTranslator
             int cols = matrix.GetLength(1);
             int half = rows / 2;
             var pf = new int[2, half];
-
+            
             for (int i = 0; i < rows; i++)
             {
                 int sum = 0;
@@ -71,7 +71,7 @@ namespace LanguageTranslator
                 else
                     pf[1, i - half] = sum;
             }
-
+            
             return pf;
         }
 
